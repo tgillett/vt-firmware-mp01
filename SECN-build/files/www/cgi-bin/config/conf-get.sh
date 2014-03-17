@@ -45,9 +45,11 @@ AP_DISABLE=`uci get secn.accesspoint.ap_disable`
 USREG_DOMAIN=`uci get secn.accesspoint.usreg_domain`
 MAXASSOC=`uci get secn.accesspoint.maxassoc`
 
-# Set AP Connections to show 'Disabled' if reqd.
-if [ $MAXASSOC = "0" ]; then
-  MAXASSOC="Disabled"
+# Set up AP enable
+if [ $AP_DISABLE = "0" ]; then
+  AP_ENABLE="checked"
+else
+  AP_ENABLE="0"
 fi 
 
 # DHCP configuration parameters
@@ -88,8 +90,11 @@ ATH0_TXPOWER=`uci get wireless.radio0.txpower`
 RADIOMODE=`uci get wireless.radio0.hwmode`
 CHANBW=`uci get wireless.radio0.chanbw`
 
+ATH0_TXP=`iwconfig | grep -A 2 'ath0' | grep -m 1 'Tx-Power'| cut -d T -f 2|cut -d = -f 2`
+WLAN0_TXP=`iwconfig | grep -A 2 'wlan0' | grep -m 1 'Tx-Power'| cut -d T -f 2|cut -d = -f 2`
+ATH0_TXPOWER_ACTUAL=$ATH0_TXP$WLAN0_TXP
+
 if [ $RADIOMODE = "11ng" ]; then
-	# Display 802.11N-G mode
 	RADIOMODE="802.11N-G"
 else
 	RADIOMODE="802.11G"
@@ -115,6 +120,7 @@ fi
 # Get WAN settings
 WANPORT=`uci get secn.wan.wanport`
 ETHWANMODE=`uci get secn.wan.ethwanmode`
+WANLAN_ENABLE=`uci get secn.wan.wanlan_enable`
 WANIP=`uci get secn.wan.wanip`
 WANGATEWAY=`uci get secn.wan.wangateway`
 WANMASK=`uci get secn.wan.wanmask`

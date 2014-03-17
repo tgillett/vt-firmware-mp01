@@ -19,6 +19,7 @@ ENABLE_AST="0"
 USREG_DOMAIN="0"
 DHCP_AUTH="0"
 MESH_ENABLE="0"
+AP_ENABLE="0"
 DEVICE_IP="0"
 
 # Get Field-Value pairs from QUERY_STRING environment variable
@@ -130,22 +131,17 @@ if [ \$AST_INSTALLED != "asterisk" ]; then
   ENABLE="0"
   fi
 
-# Set MAXASSOC to zero if display value 'Disabled' is returned
-if [ \$MAXASSOC = "Disabled" ]; then
-  MAXASSOC="0"
-fi
-# Set MAXASSOC to 100 if display value 'Enabled' is returned
-if [ \$MAXASSOC = "Enabled" ]; then
-  MAXASSOC="100"
+# Set MAXASSOC to null if display value 'Max' is returned
+if [ \$MAXASSOC = "Max" ]; then
+  MAXASSOC=""
 fi
 
-# Disable AP if max associations is zero
-if [ \$MAXASSOC = "0" ]; then
-	AP_DISABLE="1"
-else
+# Disable AP if required
+if [ \$AP_ENABLE = "checked" ]; then
 	AP_DISABLE="0"
+else
+	AP_DISABLE="1"
 fi
-
 
 # Write the Field values into the SECN config settings
 
@@ -163,8 +159,14 @@ uci set network.mesh_0.netmask=\$ATH0_NETMASK
 uci set wireless.radio0.country=\$ATH0_COUNTRY
 uci set wireless.radio0.channel=\$CHANNEL
 uci set wireless.radio0.txpower=\$ATH0_TXPOWER
-uci set wireless.radio0.hwmode=\$RADIOMODE
 uci set wireless.radio0.chanbw=\$CHANBW
+
+# Set up radio0 hwmode
+if [ \$RADIOMODE = "11ng" ]; then
+  uci set wireless.radio0.hwmode="11ng"
+else
+  uci set wireless.radio0.hwmode="11g"
+fi
 
 # Write the adhoc interface settings into /etc/config/wireless
 uci set wireless.ah_0.ssid=\$ATH0_SSID
@@ -255,15 +257,6 @@ if [ \$MPGW = "CLIENT" ]; then
   batctl gw client
   uci set batman-adv.bat0.gw_mode=client
   fi
-
-# Set up radio mode
-if [ \$RADIOMODE = "802.11N-G" ]; then
-  RADIOMODE="11ng"
-else
-  RADIOMODE="11g"
-fi
-uci set wireless.radio0.hwmode=\$RADIOMODE
-
 
 # Commit the settings into /etc/config/ files
 uci commit secn

@@ -18,10 +18,9 @@ config secn 'asterisk'
 
 config secn 'accesspoint'
 	option ssid 'VT-SECN-AP'
-	option encryption 'WPA1'
+	option encryption 'WPA'
 	option passphrase 'potato-potato'
 	option ap_disable '0'
-	option usreg_domain '0'
 	option maxassoc '20'
 
 config secn 'mesh'
@@ -53,15 +52,16 @@ config secn 'http'
 config secn 'ivr'
 	option pin '1234'
 
-config secn wan
+config secn 'wan'
 	option wanip '10.0.0.100'
 	option wangateway '10.0.0.1'
 	option wanmask '255.255.255.0'
 	option wandns '8.8.8.8'
 	option wanssid 'host-ssid'
 	option wanpass 'host-password'
-	option wanencr 'psk'
-	option wanport 'Disable'
+	option wanencr 'WPA'
 	option ethwanmode 'DHCP'
+	option wanport 'Disable'
+	option wanlan_enable '0'
 
 
