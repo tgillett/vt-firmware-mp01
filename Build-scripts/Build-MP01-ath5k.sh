@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# Build script for MP-01 devices
+# Build script for MP01 devices
 
 echo ""
 
@@ -24,8 +24,8 @@ fi
 echo "Start build process"
 
 # Set up version strings
-VER="Version 2.0 RC3c-Ath5k"
-DIRVER="RC3c-Ath5k"
+DIRVER="RC4-ath5k"
+VER="SECN Version 2.0 "$DIRVER
 
 ###########################
 
@@ -34,8 +34,8 @@ rm -rf ./SECN-build/
 cp -rp ~/Git/vt-firmware-mp01/SECN-build/  .
 cp -rp ./SECN-build/files  .
 
-#echo "Copy wifi driver overlay files from Git repo into build folder, if reqd"
-#cp -rp ~/Git/vt-firmware-mp01/SECN-build/MP-01/ath5k/files  .
+echo "Copy wifi ath5k driver overlay files from Git repo into build folder"
+cp -rp ~/Git/vt-firmware-mp01/SECN-build/MP-01/ath5k/files  .
 
 echo "Copy driver code from Git repo into build folder"
 rm -rf ./drivers
@@ -45,7 +45,7 @@ cp -rp ~/Git/vt-firmware-mp01/SECN-build/MP-01/drivers  .
 
 echo "Set up new directory name with date and version"
 DATE=`date +%Y-%m-%d-%H:%M`
-DIR=$DATE"-MP-01-"$DIRVER
+DIR=$DATE"-MP01-"$DIRVER
 
 ###########################
 
@@ -78,30 +78,28 @@ cd ../..
 
 echo '----------------------------'
 
-echo "Set up .config for MP-01"
+echo "Set up .config for MP01"
 rm ./.config
-cp ./SECN-build/MP-01/.config  ./.config
+cp ./SECN-build/MP01/.config  ./.config
 make defconfig > /dev/null
-## Use for first build on a new revision to update .config file
-#cp ./.config ./SECN-build/AR23/.config 
 
 echo '----------------------------'
-echo "Set up files for MP-01"
-DEVICE="MeshPotato-1"
+echo "Set up files for MP01"
+TARGET="MP01"
 
 echo "Check .config version"
 cat ./.config | grep "OpenWrt version"
 
 echo "Build Factory Restore tar file" 
-./FactoryRestore.sh                     ; echo "Build Factory Restore tar file"
+./FactoryRestore.sh  
 
 echo "Check files "
 ls -al ./files   
 echo ""
 
 # Set up version file
-echo "Version: "  $VER $DEVICE
-echo $VER  " " $DEVICE           > ./files/etc/secn_version
+echo "Version: "  $VER $TARGET
+echo $VER  " " $TARGET           > ./files/etc/secn_version
 echo "Date stamp the version file: " $DATE
 echo "Build date " $DATE         >> ./files/etc/secn_version
 echo " "                         >> ./files/etc/secn_version
@@ -110,7 +108,7 @@ echo "Check banner version"
 cat ./files/etc/secn_version | grep "Version"
 echo ""
 
-echo "Run make for MP-01"
+echo "Run make for MP01"
 make -i -k
 
 echo  "Move files to build folder"
@@ -126,9 +124,9 @@ rm ./bin/atheros/openwrt-*
 rm ./bin/atheros/md5sums
 
 echo ""
-echo "End MeshPotato-1 build"
+echo "End MP01 ath5k build"
 echo ""
 
-#exit
+exit
 
 
